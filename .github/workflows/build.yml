@@ -1,0 +1,25 @@
+name: Build on PR to main
+
+on:
+  pull_request:
+    branches: [ "main" ]
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: eclipse-temurin:21-jdk
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Make mvnw executable (if exists)
+        run: chmod +x mvnw || true
+
+      - name: Build with Maven
+        run: ./mvnw -B clean package || mvn -B clean package
+
+      - name: Upload jar artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-jar
+          path: ./target/*.jar
